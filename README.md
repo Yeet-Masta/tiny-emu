@@ -53,7 +53,7 @@ Make sure to disable `CONFIG_INT128` for 32-bit hosts.
 
 ## Credits
 
-TinyEMU was created by [Fabrice Bellard][fabrice].
+TinyEMU was created by [Fabrice Bellard][fabrice], and Fernando Lemos improved its macOS support.
 
 [fabrice]: https://bellard.org
 
