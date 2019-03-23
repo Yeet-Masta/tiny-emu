@@ -97,10 +97,10 @@ struct EthernetDevice {
 #endif
     /* the following is set by the device */
     void *device_opaque;
-    BOOL (*device_can_write_packet)(EthernetDevice *net);
+    bool (*device_can_write_packet)(EthernetDevice *net);
     void (*device_write_packet)(EthernetDevice *net,
                                 const uint8_t *buf, int len);
-    void (*device_set_carrier)(EthernetDevice *net, BOOL carrier_state);
+    void (*device_set_carrier)(EthernetDevice *net, bool carrier_state);
 };
 
 VIRTIODevice *virtio_net_init(VIRTIOBusDef *bus, EthernetDevice *es);
@@ -114,7 +114,7 @@ typedef struct {
 } CharacterDevice;
 
 VIRTIODevice *virtio_console_init(VIRTIOBusDef *bus, CharacterDevice *cs);
-BOOL virtio_console_can_write_data(VIRTIODevice *s);
+bool virtio_console_can_write_data(VIRTIODevice *s);
 int virtio_console_get_write_len(VIRTIODevice *s);
 int virtio_console_write_data(VIRTIODevice *s, const uint8_t *buf, int buf_len);
 void virtio_console_resize_event(VIRTIODevice *s, int width, int height);
@@ -129,7 +129,7 @@ typedef enum {
 
 #define VIRTIO_INPUT_ABS_SCALE 32768
 
-int virtio_input_send_key_event(VIRTIODevice *s, BOOL is_down,
+int virtio_input_send_key_event(VIRTIODevice *s, bool is_down,
                                 uint16_t key_code);
 int virtio_input_send_mouse_event(VIRTIODevice *s, int dx, int dy, int dz,
                                   unsigned int buttons);

@@ -86,7 +86,7 @@ int vm_get_int_opt(JSONValue obj, const char *name, int *pval, int def_val)
 }
 
 static int vm_get_str2(JSONValue obj, const char *name, const char **pstr,
-                      BOOL is_opt)
+                      bool is_opt)
 { 
     JSONValue val;
     val = json_object_get(obj, name);
@@ -109,12 +109,12 @@ static int vm_get_str2(JSONValue obj, const char *name, const char **pstr,
 
 static int vm_get_str(JSONValue obj, const char *name, const char **pstr)
 { 
-    return vm_get_str2(obj, name, pstr, FALSE);
+    return vm_get_str2(obj, name, pstr, false);
 }
 
 static int vm_get_str_opt(JSONValue obj, const char *name, const char **pstr)
 { 
-    return vm_get_str2(obj, name, pstr, TRUE);
+    return vm_get_str2(obj, name, pstr, true);
 }
 
 static char *strdup_null(const char *str)
@@ -171,7 +171,7 @@ static char *cmdline_subst(const char *cmdline)
     return (char *)dbuf.buf;
 }
 
-static BOOL find_name(const char *name, const char *name_list)
+static bool find_name(const char *name, const char *name_list)
 {
     size_t len;
     const char *p, *r;
@@ -181,16 +181,16 @@ static BOOL find_name(const char *name, const char *name_list)
         r = strchr(p, ',');
         if (!r) {
             if (!strcmp(name, p))
-                return TRUE;
+                return true;
             break;
         } else {
             len = r - p;
             if (len == strlen(name) && !memcmp(name, p, len))
-                return TRUE;
+                return true;
             p = r + 1;
         }
     }
-    return FALSE;
+    return false;
 }
 
 static const VirtMachineClass *virt_machine_list[] = {
@@ -470,7 +470,7 @@ static void config_load_file(VMConfigLoadState *s, const char *filename,
     if (is_url(filename)) {
         s->file_load_cb = cb;
         s->file_load_opaque = opaque;
-        fs_wget(filename, NULL, NULL, s, config_load_file_cb, TRUE);
+        fs_wget(filename, NULL, NULL, s, config_load_file_cb, true);
     } else
 #endif
     {

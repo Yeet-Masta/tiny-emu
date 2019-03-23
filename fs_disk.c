@@ -54,8 +54,8 @@ static void fs_close(FSDevice *fs, FSFile *f);
 struct FSFile {
     uint32_t uid;
     char *path; /* complete path */
-    BOOL is_opened;
-    BOOL is_dir;
+    bool is_opened;
+    bool is_dir;
     union {
         int fd;
         DIR *dirp;
@@ -250,16 +250,16 @@ static int fs_open(FSDevice *fs, FSQID *qid, FSFile *f, uint32_t flags,
         dirp = opendir(f->path);
         if (!dirp)
             return -errno_to_p9(errno);
-        f->is_opened = TRUE;
-        f->is_dir = TRUE;
+        f->is_opened = true;
+        f->is_dir = true;
         f->u.dirp = dirp;
     } else {
         int fd;
         fd = open(f->path, p9_flags_to_host(flags) & ~O_CREAT);
         if (fd < 0)
             return -errno_to_p9(errno);
-        f->is_opened = TRUE;
-        f->is_dir = FALSE;
+        f->is_opened = true;
+        f->is_dir = false;
         f->u.fd = fd;
     }
     return 0;
@@ -288,8 +288,8 @@ static int fs_create(FSDevice *fs, FSQID *qid, FSFile *f, const char *name,
     }
     free(f->path);
     f->path = path;
-    f->is_opened = TRUE;
-    f->is_dir = FALSE;
+    f->is_opened = true;
+    f->is_dir = false;
     f->u.fd = fd;
     stat_to_qid(qid, &st);
     return 0;
@@ -387,7 +387,7 @@ static void fs_close(FSDevice *fs, FSFile *f)
         closedir(f->u.dirp);
     else
         close(f->u.fd);
-    f->is_opened = FALSE;
+    f->is_opened = false;
 }
 
 static int fs_stat(FSDevice *fs, FSFile *f, FSStat *st)
@@ -428,24 +428,24 @@ static int fs_setattr(FSDevice *fs, FSFile *f, uint32_t mask,
                       uint64_t size, uint64_t atime_sec, uint64_t atime_nsec,
                       uint64_t mtime_sec, uint64_t mtime_nsec)
 {
-    BOOL ctime_updated = FALSE;
+    bool ctime_updated = false;
 
     if (mask & (P9_SETATTR_UID | P9_SETATTR_GID)) {
         if (lchown(f->path, (mask & P9_SETATTR_UID) ? uid : -1,
                    (mask & P9_SETATTR_GID) ? gid : -1) < 0)
             return -errno_to_p9(errno);
-        ctime_updated = TRUE;
+        ctime_updated = true;
     }
     /* must be done after uid change for suid */
     if (mask & P9_SETATTR_MODE) {
         if (chmod(f->path, mode) < 0)
             return -errno_to_p9(errno);
-        ctime_updated = TRUE;
+        ctime_updated = true;
     }
     if (mask & P9_SETATTR_SIZE) {
         if (truncate(f->path, size) < 0)
             return -errno_to_p9(errno);
-        ctime_updated = TRUE;
+        ctime_updated = true;
     }
     if (mask & (P9_SETATTR_ATIME | P9_SETATTR_MTIME)) {
         struct timespec ts[2];
@@ -475,7 +475,7 @@ static int fs_setattr(FSDevice *fs, FSFile *f, uint32_t mask,
         }
         if (utimensat(AT_FDCWD, f->path, ts, AT_SYMLINK_NOFOLLOW) < 0)
             return -errno_to_p9(errno);
-        ctime_updated = TRUE;
+        ctime_updated = true;
     }
     if ((mask & P9_SETATTR_CTIME) && !ctime_updated) {
         if (lchown(f->path, -1, -1) < 0)

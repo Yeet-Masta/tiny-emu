@@ -60,7 +60,7 @@
 typedef struct {
     int stdin_fd;
     int console_esc_state;
-    BOOL resize_pending;
+    bool resize_pending;
 } STDIODevice;
 
 static struct termios oldtty;
@@ -73,7 +73,7 @@ static void term_exit(void)
     fcntl(0, F_SETFL, old_fd0_flags);
 }
 
-static void term_init(BOOL allow_ctrlc)
+static void term_init(bool allow_ctrlc)
 {
     struct termios tty;
 
@@ -157,7 +157,7 @@ static int console_read(void *opaque, uint8_t *buf, int len)
 static void term_resize_handler(int sig)
 {
     if (global_stdio_device)
-        global_stdio_device->resize_pending = TRUE;
+        global_stdio_device->resize_pending = true;
 }
 
 static void console_get_size(STDIODevice *s, int *pw, int *ph)
@@ -176,7 +176,7 @@ static void console_get_size(STDIODevice *s, int *pw, int *ph)
     *ph = height;
 }
 
-CharacterDevice *console_init(BOOL allow_ctrlc)
+CharacterDevice *console_init(bool allow_ctrlc)
 {
     CharacterDevice *dev;
     STDIODevice *s;
@@ -191,7 +191,7 @@ CharacterDevice *console_init(BOOL allow_ctrlc)
        write() in printf, so some messages on stdout may be lost */
     fcntl(s->stdin_fd, F_SETFL, O_NONBLOCK);
 
-    s->resize_pending = TRUE;
+    s->resize_pending = true;
     global_stdio_device = s;
 
     /* use a signal to get the host terminal resize events */
@@ -352,7 +352,7 @@ static BlockDevice *block_device_init(const char *filename,
 
 typedef struct {
     int fd;
-    BOOL select_filled;
+    bool select_filled;
 } TunState;
 
 static void tun_write_packet(EthernetDevice *net,
@@ -563,7 +563,7 @@ void virt_machine_run(VirtMachine *m)
             int width, height;
             console_get_size(s, &width, &height);
             virtio_console_resize_event(m->console_dev, width, height);
-            s->resize_pending = FALSE;
+            s->resize_pending = false;
         }
     }
 #endif
@@ -630,14 +630,14 @@ void help(void)
 }
 
 #ifdef CONFIG_FS_NET
-static BOOL net_completed;
+static bool net_completed;
 
 static void net_start_cb(void *arg)
 {
-    net_completed = TRUE;
+    net_completed = true;
 }
 
-static BOOL net_poll_cb(void *arg)
+static bool net_poll_cb(void *arg)
 {
     return net_completed;
 }
@@ -649,12 +649,12 @@ int main(int argc, char **argv)
     VirtMachine *s;
     const char *path, *cmdline, *build_preload_file;
     int c, option_index, i, ram_size;
-    BOOL allow_ctrlc;
+    bool allow_ctrlc;
     BlockDeviceModeEnum drive_mode;
     VirtMachineParams p_s, *p = &p_s;
 
     ram_size = -1;
-    allow_ctrlc = FALSE;
+    allow_ctrlc = false;
     (void)allow_ctrlc;
     drive_mode = BF_MODE_SNAPSHOT;
     cmdline = NULL;
@@ -667,7 +667,7 @@ int main(int argc, char **argv)
         case 0:
             switch(option_index) {
             case 1: /* ctrlc */
-                allow_ctrlc = TRUE;
+                allow_ctrlc = true;
                 break;
             case 2: /* rw */
                 drive_mode = BF_MODE_RW;
@@ -728,7 +728,7 @@ int main(int argc, char **argv)
         fname = get_file_path(p->cfg_filename, p->tab_drive[i].filename);
 #ifdef CONFIG_FS_NET
         if (is_url(fname)) {
-            net_completed = FALSE;
+            net_completed = false;
             drive = block_device_init_http(fname, 128 * 1024,
                                            net_start_cb, NULL);
             /* wait until the drive is initialized */
@@ -809,7 +809,7 @@ int main(int argc, char **argv)
         p->console = console_init(allow_ctrlc);
 #endif
     }
-    p->rtc_real_time = TRUE;
+    p->rtc_real_time = true;
 
     s = virt_machine_init(p);
     if (!s)
@@ -818,7 +818,7 @@ int main(int argc, char **argv)
     virt_machine_free_config(p);
 
     if (s->net) {
-        s->net->device_set_carrier(s->net, TRUE);
+        s->net->device_set_carrier(s->net, true);
     }
 
     for(;;) {

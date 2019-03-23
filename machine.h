@@ -86,8 +86,8 @@ typedef struct {
     const VirtMachineClass *vmc;
     char *machine_name;
     uint64_t ram_size;
-    BOOL rtc_real_time;
-    BOOL rtc_local_time;
+    bool rtc_real_time;
+    bool rtc_local_time;
     char *display_device; /* NULL means no display */
     int width, height; /* graphic width & height */
     CharacterDevice *console;
@@ -99,7 +99,7 @@ typedef struct {
     int eth_count;
 
     char *cmdline; /* bios or kernel command line */
-    BOOL accel_enable; /* enable acceleration (KVM) */
+    bool accel_enable; /* enable acceleration (KVM) */
     char *input_device; /* NULL means no input */
     
     /* kernel, bios and other auxiliary files */
@@ -124,10 +124,10 @@ struct VirtMachineClass {
     void (*virt_machine_end)(VirtMachine *s);
     int (*virt_machine_get_sleep_duration)(VirtMachine *s, int delay);
     void (*virt_machine_interp)(VirtMachine *s, int max_exec_cycle);
-    BOOL (*vm_mouse_is_absolute)(VirtMachine *s);
+    bool (*vm_mouse_is_absolute)(VirtMachine *s);
     void (*vm_send_mouse_event)(VirtMachine *s1, int dx, int dy, int dz,
                                 unsigned int buttons);
-    void (*vm_send_key_event)(VirtMachine *s1, BOOL is_down, uint16_t key_code);
+    void (*vm_send_key_event)(VirtMachine *s1, bool is_down, uint16_t key_code);
 };
 
 extern const VirtMachineClass riscv_machine_class;
@@ -155,7 +155,7 @@ static inline void virt_machine_interp(VirtMachine *s, int max_exec_cycle)
 {
     s->vmc->virt_machine_interp(s, max_exec_cycle);
 }
-static inline BOOL vm_mouse_is_absolute(VirtMachine *s)
+static inline bool vm_mouse_is_absolute(VirtMachine *s)
 {
     return s->vmc->vm_mouse_is_absolute(s);
 }
@@ -164,7 +164,7 @@ static inline void vm_send_mouse_event(VirtMachine *s1, int dx, int dy, int dz,
 {
     s1->vmc->vm_send_mouse_event(s1, dx, dy, dz, buttons);
 }
-static inline void vm_send_key_event(VirtMachine *s1, BOOL is_down, uint16_t key_code)
+static inline void vm_send_key_event(VirtMachine *s1, bool is_down, uint16_t key_code)
 {
     s1->vmc->vm_send_key_event(s1, is_down, key_code);
 }

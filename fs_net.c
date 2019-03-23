@@ -84,7 +84,7 @@ typedef struct FSBaseURL {
     char *url;
     char *user;
     char *password;
-    BOOL encrypted;
+    bool encrypted;
     AES_KEY aes_state;
 } FSBaseURL;
 
@@ -110,7 +110,7 @@ typedef struct FSINode {
             FSFileID file_id; /* network file ID */
             struct list_head link;
             struct FSOpenInfo *open_info; /* used in LOADING state */
-            BOOL is_fscmd;
+            bool is_fscmd;
 #ifdef DUMP_CACHE_LOAD
             char *filename;
 #endif
@@ -153,14 +153,14 @@ typedef struct {
 struct FSFile {
     uint32_t uid;
     FSINode *inode;
-    BOOL is_opened;
+    bool is_opened;
     uint32_t open_flags;
     FSCMDRequest *req;
 };
 
 typedef struct {
     struct list_head link;
-    BOOL is_archive;
+    bool is_archive;
     const char *name;
 } PreloadFile;
 
@@ -204,8 +204,8 @@ typedef struct FSDeviceMem {
     struct list_head base_url_list; /* list of FSBaseURL.link */
     char *import_dir;
 #ifdef DUMP_CACHE_LOAD
-    BOOL dump_cache_load;
-    BOOL dump_started;
+    bool dump_cache_load;
+    bool dump_started;
     char *dump_preload_dir;
     FILE *dump_preload_file;
     FILE *dump_preload_archive_file;
@@ -528,7 +528,7 @@ static FSINode *inode_search_path(FSDevice *fs1, const char *path)
     return inode_search_path1(fs1, fs->root_inode, path);
 }
 
-static BOOL is_empty_dir(FSDevice *fs, FSINode *n)
+static bool is_empty_dir(FSDevice *fs, FSINode *n)
 {
     struct list_head *el;
     FSDirEntry *de;
@@ -537,9 +537,9 @@ static BOOL is_empty_dir(FSDevice *fs, FSINode *n)
         de = list_entry(el, FSDirEntry, link);
         if (strcmp(de->name, ".") != 0 &&
             strcmp(de->name, "..") != 0)
-            return FALSE;
+            return false;
     }
-    return TRUE;
+    return true;
 }
 
 static void inode_dirent_delete_no_decref(FSDevice *fs1, FSINode *n, FSDirEntry *de)
@@ -737,7 +737,7 @@ static void fs_wget_set_loaded(FSINode *n)
     
     if (oi->cb) {
         f = oi->f;
-        f->is_opened = TRUE;
+        f->is_opened = true;
         inode_to_qid(&qid, n);
         oi->cb(oi->fs, &qid, 0, oi->opaque);
     }
@@ -862,7 +862,7 @@ static int fs_open_wget(FSDevice *fs1, FSINode *n, FSOpenWgetEnum open_type)
         if (bu->encrypted) {
             oi->dec_state = decrypt_file_init(&bu->aes_state, fs_open_write_cb, oi);
         }
-        oi->xhr = fs_wget(url, bu->user, bu->password, oi, fs_open_cb, FALSE);
+        oi->xhr = fs_wget(url, bu->user, bu->password, oi, fs_open_cb, false);
     }
     n->u.reg.open_info = oi;
     return 0;
@@ -903,7 +903,7 @@ static void fs_preload_archive(FSDevice *fs1, const char *filename)
     struct list_head *el;
     FSINode *n, *n1;
     uint64_t offset;
-    BOOL has_unloaded;
+    bool has_unloaded;
     
     pa = find_preload_archive(fs, filename);
     if (!pa)
@@ -915,13 +915,13 @@ static void fs_preload_archive(FSDevice *fs1, const char *filename)
     if (n && n->type == FT_REG && n->u.reg.state == REG_STATE_UNLOADED) {
         /* if all the files are loaded, no need to load the archive */
         offset = 0;
-        has_unloaded = FALSE;
+        has_unloaded = false;
         list_for_each(el, &pa->file_list) {
             paf = list_entry(el, PreloadArchiveFile, link);
             n1 = inode_search_path(fs1, paf->name);
             if (n1 && n1->type == FT_REG &&
                 n1->u.reg.state == REG_STATE_UNLOADED) {
-                has_unloaded = TRUE;
+                has_unloaded = true;
             }
             offset += paf->size;
         }
@@ -1073,7 +1073,7 @@ static int fs_open(FSDevice *fs1, FSQID *qid, FSFile *f, uint32_t flags,
         }
     } else {
     do_open:
-        f->is_opened = TRUE;
+        f->is_opened = true;
         inode_to_qid(qid, n);
         return 0;
     }
@@ -1097,7 +1097,7 @@ static int fs_create(FSDevice *fs, FSQID *qid, FSFile *f, const char *name,
         
         inode_dec_open(fs, f->inode);
         f->inode = inode_inc_open(fs, n1);
-        f->is_opened = TRUE;
+        f->is_opened = true;
         f->open_flags = flags;
         inode_to_qid(qid, n1);
         return 0;
@@ -1283,7 +1283,7 @@ static int fs_write(FSDevice *fs1, FSFile *f, uint64_t offset,
 static void fs_close(FSDevice *fs, FSFile *f)
 {
     if (f->is_opened) {
-        f->is_opened = FALSE;
+        f->is_opened = false;
     }
     if (f->req)
         fs_cmd_close(fs, f);
@@ -1577,7 +1577,7 @@ FSDevice *fs_mem_init(void)
     return (FSDevice *)fs;
 }
 
-static BOOL fs_is_net(FSDevice *fs)
+static bool fs_is_net(FSDevice *fs)
 {
     return (fs->fs_end == fs_mem_end);
 }
@@ -1642,10 +1642,10 @@ static FSBaseURL *fs_net_set_base_url(FSDevice *fs1,
     else
         bu->password = NULL;
     if (aes_state) {
-        bu->encrypted = TRUE;
+        bu->encrypted = true;
         bu->aes_state = *aes_state;
     } else {
-        bu->encrypted = FALSE;
+        bu->encrypted = false;
     }
     return bu;
 }
@@ -1755,7 +1755,7 @@ static void dump_loaded_file(FSDevice *fs1, FSINode *n)
             p++;
         free(fs->dump_archive_name);
         fs->dump_archive_name = strdup(p);
-        fs->dump_started = TRUE;
+        fs->dump_started = true;
         fs->dump_archive_num = 0;
 
         fprintf(fs->dump_preload_file, "\n%s :\n", fname);
@@ -1885,7 +1885,7 @@ void fs_dump_cache_load(FSDevice *fs1, const char *cfg_filename)
     }
     free(fname);
 
-    fs->dump_cache_load = TRUE;
+    fs->dump_cache_load = true;
 }
 #else
 void fs_dump_cache_load(FSDevice *fs1, const char *cfg_filename)
@@ -2064,7 +2064,7 @@ static void fs_create_cmd(FSDevice *fs)
     assert(!fs->fs_create(fs, &qid, root_fd, FSCMD_NAME, P9_O_RDWR | P9_O_TRUNC,
                           0666, 0));
     n = root_fd->inode;
-    n->u.reg.is_fscmd = TRUE;
+    n->u.reg.is_fscmd = true;
     fs->fs_delete(fs, root_fd);
 }
 
@@ -2087,7 +2087,7 @@ static void head_loaded(FSDevice *fs, FSFile *f, int64_t size, void *opaque);
 static void filelist_loaded(FSDevice *fs, FSFile *f, int64_t size, void *opaque);
 static void kernel_load_cb(FSDevice *fs, FSQID *qid, int err,
                            void *opaque);
-static int preload_parse(FSDevice *fs, const char *fname, BOOL is_new);
+static int preload_parse(FSDevice *fs, const char *fname, bool is_new);
 
 #ifdef EMSCRIPTEN
 static FSDevice *fs_import_fs;
@@ -2245,8 +2245,8 @@ static void kernel_load_cb(FSDevice *fs, FSQID *qid1, int err,
     
     if (s->file_index >= FILE_LOAD_COUNT) {
         /* all files are loaded */
-        if (preload_parse(fs, ".preload2/preload.txt", TRUE) < 0) { 
-            preload_parse(fs, ".preload", FALSE);
+        if (preload_parse(fs, ".preload2/preload.txt", true) < 0) {
+            preload_parse(fs, ".preload", false);
         }
         fs->fs_delete(fs, s->root_fd);
         if (s->start_cb)
@@ -2320,7 +2320,7 @@ static void preload_parse_str(FSDevice *fs1, const char *p)
     PreloadEntry *pe;
     PreloadArchive *pa;
     FSINode *n;
-    BOOL is_archive;
+    bool is_archive;
     char fname[1024];
     
     pe = NULL;
@@ -2338,9 +2338,9 @@ static void preload_parse_str(FSDevice *fs1, const char *p)
         if (*p == '\0')
             break;
 
-        is_archive = FALSE;
+        is_archive = false;
         if (*p == '@') {
-            is_archive = TRUE;
+            is_archive = true;
             p++;
         }
         if (parse_fname(fname, sizeof(fname), &p) < 0) {
@@ -2411,7 +2411,7 @@ static void preload_parse_str(FSDevice *fs1, const char *p)
     }
 }
 
-static int preload_parse(FSDevice *fs, const char *fname, BOOL is_new)
+static int preload_parse(FSDevice *fs, const char *fname, bool is_new)
 {
     FSINode *n;
     char *buf;

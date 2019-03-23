@@ -48,7 +48,7 @@ typedef struct RISCVMachine {
     RISCVCPUState *cpu_state;
     uint64_t ram_size;
     /* RTC */
-    BOOL rtc_real_time;
+    bool rtc_real_time;
     uint64_t rtc_start_time;
     uint64_t timecmp;
     /* PLIC */
@@ -313,7 +313,7 @@ static void plic_set_irq(void *opaque, int irq_num, int state)
     plic_update_mip(s);
 }
 
-static uint8_t *get_ram_ptr(RISCVMachine *s, uint64_t paddr, BOOL is_rw)
+static uint8_t *get_ram_ptr(RISCVMachine *s, uint64_t paddr, bool is_rw)
 {
     return phys_mem_get_ram_ptr(s->mem_map, paddr, is_rw);
 }
@@ -753,7 +753,7 @@ static void copy_bios(RISCVMachine *s, const uint8_t *buf, int buf_len,
     uint8_t *ram_ptr;
     uint32_t *q;
 
-    ram_ptr = get_ram_ptr(s, RAM_BASE_ADDR, TRUE);
+    ram_ptr = get_ram_ptr(s, RAM_BASE_ADDR, true);
 
     /* copy the bios */
     if (elf_detect_magic(buf, buf_len)) {
@@ -790,7 +790,7 @@ static void copy_bios(RISCVMachine *s, const uint8_t *buf, int buf_len,
         kernel_base = 0;
     }
 
-    ram_ptr = get_ram_ptr(s, 0, TRUE);
+    ram_ptr = get_ram_ptr(s, 0, true);
     
     fdt_addr = 0x1000 + 8 * 8;
 
@@ -1022,7 +1022,7 @@ static void riscv_machine_interp(VirtMachine *s1, int max_exec_cycle)
     riscv_cpu_interp(s->cpu_state, max_exec_cycle);
 }
 
-static void riscv_vm_send_key_event(VirtMachine *s1, BOOL is_down,
+static void riscv_vm_send_key_event(VirtMachine *s1, bool is_down,
                                     uint16_t key_code)
 {
     RISCVMachine *s = (RISCVMachine *)s1;
@@ -1031,9 +1031,9 @@ static void riscv_vm_send_key_event(VirtMachine *s1, BOOL is_down,
     }
 }
 
-static BOOL riscv_vm_mouse_is_absolute(VirtMachine *s)
+static bool riscv_vm_mouse_is_absolute(VirtMachine *s)
 {
-    return TRUE;
+    return true;
 }
 
 static void riscv_vm_send_mouse_event(VirtMachine *s1, int dx, int dy, int dz,

@@ -36,7 +36,7 @@ static PhysMemoryRange *default_register_ram(PhysMemoryMap *s, uint64_t addr,
 static void default_free_ram(PhysMemoryMap *s, PhysMemoryRange *pr);
 static const uint32_t *default_get_dirty_bits(PhysMemoryMap *map, PhysMemoryRange *pr);
 static void default_set_addr(PhysMemoryMap *map,
-                             PhysMemoryRange *pr, uint64_t addr, BOOL enabled);
+                             PhysMemoryRange *pr, uint64_t addr, bool enabled);
 
 PhysMemoryMap *phys_mem_map_init(void)
 {
@@ -86,7 +86,7 @@ PhysMemoryRange *register_ram_entry(PhysMemoryMap *s, uint64_t addr,
     assert((size & (DEVRAM_PAGE_SIZE - 1)) == 0 && size != 0);
     pr = &s->phys_mem_range[s->n_phys_mem_range++];
     pr->map = s;
-    pr->is_ram = TRUE;
+    pr->is_ram = true;
     pr->devram_flags = devram_flags & ~DEVRAM_FLAG_DISABLED;
     pr->addr = addr;
     pr->org_size = size;
@@ -131,16 +131,16 @@ static const uint32_t *default_get_dirty_bits(PhysMemoryMap *map,
                                               PhysMemoryRange *pr)
 {
     uint32_t *dirty_bits;
-    BOOL has_dirty_bits;
+    bool has_dirty_bits;
     size_t n, i;
     
     dirty_bits = pr->dirty_bits;
 
-    has_dirty_bits = FALSE;
+    has_dirty_bits = false;
     n = pr->dirty_bits_size / sizeof(uint32_t);
     for(i = 0; i < n; i++) {
         if (dirty_bits[i] != 0) {
-            has_dirty_bits = TRUE;
+            has_dirty_bits = true;
             break;
         }
     }
@@ -197,7 +197,7 @@ PhysMemoryRange *cpu_register_device(PhysMemoryMap *s, uint64_t addr,
         pr->size = 0;
     else
         pr->size = pr->org_size;
-    pr->is_ram = FALSE;
+    pr->is_ram = false;
     pr->opaque = opaque;
     pr->read_func = read_func;
     pr->write_func = write_func;
@@ -206,7 +206,7 @@ PhysMemoryRange *cpu_register_device(PhysMemoryMap *s, uint64_t addr,
 }
 
 static void default_set_addr(PhysMemoryMap *map,
-                             PhysMemoryRange *pr, uint64_t addr, BOOL enabled)
+                             PhysMemoryRange *pr, uint64_t addr, bool enabled)
 {
     if (enabled) {
         if (pr->size == 0 || pr->addr != addr) {
@@ -231,7 +231,7 @@ static void default_set_addr(PhysMemoryMap *map,
     }
 }
 
-void phys_mem_set_addr(PhysMemoryRange *pr, uint64_t addr, BOOL enabled)
+void phys_mem_set_addr(PhysMemoryRange *pr, uint64_t addr, bool enabled)
 {
     PhysMemoryMap *map = pr->map;
     if (!pr->is_ram) {
@@ -242,7 +242,7 @@ void phys_mem_set_addr(PhysMemoryRange *pr, uint64_t addr, BOOL enabled)
 }
 
 /* return NULL if no valid RAM page. The access can only be done in the page */
-uint8_t *phys_mem_get_ram_ptr(PhysMemoryMap *map, uint64_t paddr, BOOL is_rw)
+uint8_t *phys_mem_get_ram_ptr(PhysMemoryMap *map, uint64_t paddr, bool is_rw)
 {
     PhysMemoryRange *pr = get_phys_mem_range(map, paddr);
     uintptr_t offset;

@@ -54,12 +54,12 @@ static uint8_t console_fifo[1024];
 static int console_fifo_windex;
 static int console_fifo_rindex;
 static int console_fifo_count;
-static BOOL console_resize_pending;
+static bool console_resize_pending;
 
 static int global_width;
 static int global_height;
 static VirtMachine *global_vm;
-static BOOL global_carrier_state;
+static bool global_carrier_state;
 
 static int console_read(void *opaque, uint8_t *buf, int len)
 {
@@ -140,7 +140,7 @@ void net_write_packet(const uint8_t *buf, int buf_len)
 }
 
 /* called from JS */
-void net_set_carrier(BOOL carrier_state)
+void net_set_carrier(bool carrier_state)
 {
     EthernetDevice *net;
     global_carrier_state = carrier_state;
@@ -161,7 +161,7 @@ static void fb_refresh1(FBDevice *fb_dev, void *opaque,
 static CharacterDevice *console_init(void)
 {
     CharacterDevice *dev;
-    console_resize_pending = TRUE;
+    console_resize_pending = true;
     dev = mallocz(sizeof(*dev));
     dev->write_data = console_write;
     dev->read_data = console_read;
@@ -172,7 +172,7 @@ typedef struct {
     VirtMachineParams *p;
     int ram_size;
     char *cmdline;
-    BOOL has_network;
+    bool has_network;
     char *pwd;
 } VMStartState;
 
@@ -181,7 +181,7 @@ static void init_vm_fs(void *arg);
 static void init_vm_drive(void *arg);
 
 void vm_start(const char *url, int ram_size, const char *cmdline,
-              const char *pwd, int width, int height, BOOL has_network)
+              const char *pwd, int width, int height, bool has_network)
 {
     VMStartState *s;
 
@@ -238,7 +238,7 @@ static void init_vm(void *arg)
     VirtMachineParams *p = s->p;
     int i;
     
-    p->rtc_real_time = TRUE;
+    p->rtc_real_time = true;
     p->ram_size = s->ram_size << 20;
     if (s->cmdline && s->cmdline[0] != '\0') {
         vm_add_cmdline(s->p, s->cmdline);
@@ -320,7 +320,7 @@ void virt_machine_run(void *opaque)
             int w, h;
             console_get_size(&w, &h);
             virtio_console_resize_event(m->console_dev, w, h);
-            console_resize_pending = FALSE;
+            console_resize_pending = false;
         }
     }
 

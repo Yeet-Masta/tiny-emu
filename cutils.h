@@ -25,6 +25,7 @@
 #define CUTILS_H
 
 #include <inttypes.h>
+#include <stdbool.h>
 
 #define likely(x)       __builtin_expect(!!(x), 1)
 #define unlikely(x)     __builtin_expect(!!(x), 0)
@@ -43,18 +44,6 @@
 #define countof(x) (sizeof(x) / sizeof(x[0]))
 
 #define DLL_PUBLIC __attribute__ ((visibility ("default")))
-
-#ifndef _BOOL_defined
-#define _BOOL_defined
-#undef FALSE
-#undef TRUE
-
-typedef int BOOL;
-enum {
-    FALSE = 0,
-    TRUE = 1,
-};
-#endif
 
 /* this test works at least with gcc */
 #if defined(__SIZEOF_INT128__)

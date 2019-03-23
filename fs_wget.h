@@ -50,14 +50,14 @@ typedef size_t WGetReadCallback(void *opaque, void *data, size_t size);
 typedef struct XHRState XHRState;
 
 XHRState *fs_wget(const char *url, const char *user, const char *password,
-                  void *opaque, WGetWriteCallback *cb, BOOL single_write);
+                  void *opaque, WGetWriteCallback *cb, bool single_write);
 void fs_wget_free(XHRState *s);
 
 void fs_wget_init(void);
 void fs_wget_end(void);
 
 #ifndef EMSCRIPTEN
-typedef BOOL FSNetEventLoopCompletionFunc(void *opaque);
+typedef bool FSNetEventLoopCompletionFunc(void *opaque);
 void fs_net_set_fdset(int *pfd_max, fd_set *rfds, fd_set *wfds, fd_set *efds,
                       int *ptimeout);
 void fs_net_event_loop(FSNetEventLoopCompletionFunc *cb, void *opaque);

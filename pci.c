@@ -194,7 +194,7 @@ void pci_register_bar(PCIDevice *d, unsigned int bar_num,
     assert(r->size == 0);
     r->size = size;
     r->type = type;
-    r->enabled = FALSE;
+    r->enabled = false;
     r->opaque = opaque;
     r->bar_set = bar_set;
     /* set the config value */
@@ -212,7 +212,7 @@ static void pci_update_mappings(PCIDevice *d)
 {
     int cmd, i, offset;
     uint32_t new_addr;
-    BOOL new_enabled;
+    bool new_enabled;
     PCIIORegion *r;
     
     cmd = get_le16(&d->config[PCI_COMMAND]);
@@ -225,17 +225,17 @@ static void pci_update_mappings(PCIDevice *d)
             offset = 0x10 + i * 4;
         }
         new_addr = get_le32(&d->config[offset]);
-        new_enabled = FALSE;
+        new_enabled = false;
         if (r->size != 0) {
             if ((r->type & PCI_ADDRESS_SPACE_IO) &&
                 (cmd & PCI_COMMAND_IO)) {
-                new_enabled = TRUE;
+                new_enabled = true;
             } else {
                 if (cmd & PCI_COMMAND_MEMORY) {
                     if (i == PCI_ROM_SLOT) {
                         new_enabled = (new_addr & 1);
                     } else {
-                        new_enabled = TRUE;
+                        new_enabled = true;
                     }
                 }
             }
@@ -243,11 +243,11 @@ static void pci_update_mappings(PCIDevice *d)
         if (new_enabled) {
             /* new address */
             new_addr = get_le32(&d->config[offset]) & ~(r->size - 1);
-            r->bar_set(r->opaque, i, new_addr, TRUE);
-            r->enabled = TRUE;
+            r->bar_set(r->opaque, i, new_addr, true);
+            r->enabled = true;
         } else if (r->enabled) {
-            r->bar_set(r->opaque, i, 0, FALSE);
-            r->enabled = FALSE;
+            r->bar_set(r->opaque, i, 0, false);
+            r->enabled = false;
         }
     }
 }
@@ -404,7 +404,7 @@ static uint32_t pci_data_read(PCIBus *s, uint32_t addr, int size_log2)
 
 /* warning: only valid for one DEVIO page. Return NULL if no memory at
    the given address */
-uint8_t *pci_device_get_dma_ptr(PCIDevice *d, uint64_t addr, BOOL is_rw)
+uint8_t *pci_device_get_dma_ptr(PCIDevice *d, uint64_t addr, bool is_rw)
 {
     return phys_mem_get_ram_ptr(d->bus->mem_map, addr, is_rw);
 }

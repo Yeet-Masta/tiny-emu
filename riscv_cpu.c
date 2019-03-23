@@ -651,7 +651,7 @@ static void glue(riscv_cpu_flush_tlb_write_range_ram,
 static target_ulong get_mstatus(RISCVCPUState *s, target_ulong mask)
 {
     target_ulong val;
-    BOOL sd;
+    bool sd;
     val = s->mstatus | (s->fs << MSTATUS_FS_SHIFT);
     val &= mask;
     sd = ((val & MSTATUS_FS) == MSTATUS_FS) |
@@ -701,7 +701,7 @@ static void set_mstatus(RISCVCPUState *s, target_ulong val)
 /* return -1 if invalid CSR. 0 if OK. 'will_write' indicate that the
    csr will be written after (used for CSR access check) */
 static int csr_read(RISCVCPUState *s, target_ulong *pval, uint32_t csr,
-                     BOOL will_write)
+                     bool will_write)
 {
     target_ulong val;
 
@@ -1042,7 +1042,7 @@ static void set_priv(RISCVCPUState *s, int priv)
 static void raise_exception2(RISCVCPUState *s, uint32_t cause,
                              target_ulong tval)
 {
-    BOOL deleg;
+    bool deleg;
     target_ulong causel;
     
 #if defined(DUMP_EXCEPTIONS) || defined(DUMP_MMU_EXCEPTIONS) || defined(DUMP_INTERRUPTS)
@@ -1268,7 +1268,7 @@ static void glue(riscv_cpu_set_mip, MAX_XLEN)(RISCVCPUState *s, uint32_t mask)
     s->mip |= mask;
     /* exit from power down if an interrupt is pending */
     if (s->power_down_flag && (s->mip & s->mie) != 0)
-        s->power_down_flag = FALSE;
+        s->power_down_flag = false;
 }
 
 static void glue(riscv_cpu_reset_mip, MAX_XLEN)(RISCVCPUState *s, uint32_t mask)
@@ -1281,7 +1281,7 @@ static uint32_t glue(riscv_cpu_get_mip, MAX_XLEN)(RISCVCPUState *s)
     return s->mip;
 }
 
-static BOOL glue(riscv_cpu_get_power_down, MAX_XLEN)(RISCVCPUState *s)
+static bool glue(riscv_cpu_get_power_down, MAX_XLEN)(RISCVCPUState *s)
 {
     return s->power_down_flag;
 }

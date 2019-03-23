@@ -96,7 +96,7 @@ typedef struct BlockDeviceHTTP {
     int64_t n_write_sectors;
 
     /* current read request */
-    BOOL is_write;
+    bool is_write;
     uint64_t sector_num;
     int cur_block_num;
     int sector_index, sector_count;
@@ -194,7 +194,7 @@ static void bf_start_load_block(BlockDevice *bs, int block_num)
 #endif
     snprintf(filename, sizeof(filename), BLK_FMT, bf->url, block_num);
     //    printf("wget %s\n", filename);
-    fs_wget(filename, NULL, NULL, b, bf_read_onload, TRUE);
+    fs_wget(filename, NULL, NULL, b, bf_read_onload, true);
 }
 
 static void bf_start_load_prefetch_group(BlockDevice *bs, int group_num,
@@ -205,10 +205,10 @@ static void bf_start_load_prefetch_group(BlockDevice *bs, int group_num,
     CachedBlock *b;
     PrefetchGroupRequest *req;
     char filename[1024];
-    BOOL req_flag;
+    bool req_flag;
     int i;
     
-    req_flag = FALSE;
+    req_flag = false;
     req = malloc(sizeof(*req));
     req->bf = bf;
     req->group_num = group_num;
@@ -217,7 +217,7 @@ static void bf_start_load_prefetch_group(BlockDevice *bs, int group_num,
         b = bf_find_block(bf, tab_block_num[i]);
         if (!b) {
             b = bf_add_block(bf, tab_block_num[i]);
-            req_flag = TRUE;
+            req_flag = true;
         } else {
             /* no need to read the block if it is already loading or
                loaded */
@@ -229,7 +229,7 @@ static void bf_start_load_prefetch_group(BlockDevice *bs, int group_num,
     if (req_flag) {
         snprintf(filename, sizeof(filename), GROUP_FMT, bf->url, group_num);
         //        printf("wget %s\n", filename);
-        fs_wget(filename, NULL, NULL, req, bf_prefetch_group_onload, TRUE);
+        fs_wget(filename, NULL, NULL, req, bf_prefetch_group_onload, true);
         /* XXX: should add request in a list to free it for clean exit */
     } else {
         free(req);
@@ -259,7 +259,7 @@ static void bf_prefetch_group_onload(void *opaque, int err, void *data,
     free(req);
 }
 
-static int bf_rw_async1(BlockDevice *bs, BOOL is_sync)
+static int bf_rw_async1(BlockDevice *bs, bool is_sync)
 {
     BlockDeviceHTTP *bf = bs->opaque;
     int offset, block_num, n, cluster_num;
@@ -349,7 +349,7 @@ static void bf_update_block(CachedBlock *b, const uint8_t *data)
     
     /* continue I/O read/write if necessary */
     if (b->block_num == bf->cur_block_num) {
-        bf_rw_async1(bs, FALSE);
+        bf_rw_async1(bs, false);
     }
 }
 
@@ -373,7 +373,7 @@ static int bf_read_async(BlockDevice *bs,
 {
     BlockDeviceHTTP *bf = bs->opaque;
     //    printf("bf_read_async: sector_num=%" PRId64 " n=%d\n", sector_num, n);
-    bf->is_write = FALSE;
+    bf->is_write = false;
     bf->sector_num = sector_num;
     bf->io_buf = buf;
     bf->sector_count = n;
@@ -381,7 +381,7 @@ static int bf_read_async(BlockDevice *bs,
     bf->cb = cb;
     bf->opaque = opaque;
     bf->n_read_sectors += n;
-    return bf_rw_async1(bs, TRUE);
+    return bf_rw_async1(bs, true);
 }
 
 static int bf_write_async(BlockDevice *bs,
@@ -390,7 +390,7 @@ static int bf_write_async(BlockDevice *bs,
 {
     BlockDeviceHTTP *bf = bs->opaque;
     //    printf("bf_write_async: sector_num=%" PRId64 " n=%d\n", sector_num, n);
-    bf->is_write = TRUE;
+    bf->is_write = true;
     bf->sector_num = sector_num;
     bf->io_buf = (uint8_t *)buf;
     bf->sector_count = n;
@@ -398,7 +398,7 @@ static int bf_write_async(BlockDevice *bs,
     bf->cb = cb;
     bf->opaque = opaque;
     bf->n_write_sectors += n;
-    return bf_rw_async1(bs, TRUE);
+    return bf_rw_async1(bs, true);
 }
 
 BlockDevice *block_device_init_http(const char *url,
@@ -432,7 +432,7 @@ BlockDevice *block_device_init_http(const char *url,
     bs->read_async = bf_read_async;
     bs->write_async = bf_write_async;
     
-    fs_wget(url, NULL, NULL, bs, bf_init_onload, TRUE);
+    fs_wget(url, NULL, NULL, bs, bf_init_onload, true);
     return bs;
 }
 

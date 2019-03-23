@@ -362,7 +362,7 @@ int parse_tag_version(const char *str)
     return version;
 }
 
-BOOL is_url(const char *path)
+bool is_url(const char *path)
 {
     return (strstart(path, "http:", NULL) ||
             strstart(path, "https:", NULL) ||

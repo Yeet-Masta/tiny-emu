@@ -267,8 +267,8 @@ static void sdl_reset_keys(VirtMachine *m)
 
     for(i = 1; i <= KEYCODE_MAX; i++) {
         if (key_pressed[i]) {
-            vm_send_key_event(m, FALSE, i);
-            key_pressed[i] = FALSE;
+            vm_send_key_event(m, false, i);
+            key_pressed[i] = false;
         }
     }
 }
@@ -281,8 +281,8 @@ static void sdl_handle_key_event(const SDL_KeyboardEvent *ev, VirtMachine *m)
     if (keycode) {
         if (keycode == 0x3a || keycode ==0x45) {
             /* SDL does not generate key up for numlock & caps lock */
-            vm_send_key_event(m, TRUE, keycode);
-            vm_send_key_event(m, FALSE, keycode);
+            vm_send_key_event(m, true, keycode);
+            vm_send_key_event(m, false, keycode);
         } else {
             keypress = (ev->type == SDL_KEYDOWN);
             if (keycode <= KEYCODE_MAX)
@@ -297,7 +297,7 @@ static void sdl_handle_key_event(const SDL_KeyboardEvent *ev, VirtMachine *m)
 }
 
 static void sdl_send_mouse_event(VirtMachine *m, int x1, int y1,
-                                 int dz, int state, BOOL is_absolute)
+                                 int dz, int state, bool is_absolute)
 {
     int buttons, x, y;
 
@@ -320,7 +320,7 @@ static void sdl_send_mouse_event(VirtMachine *m, int x1, int y1,
 
 static void sdl_handle_mouse_motion_event(const SDL_Event *ev, VirtMachine *m)
 {
-    BOOL is_absolute = vm_mouse_is_absolute(m);
+    bool is_absolute = vm_mouse_is_absolute(m);
     int x, y;
     if (is_absolute) {
         x = ev->motion.x;
@@ -334,7 +334,7 @@ static void sdl_handle_mouse_motion_event(const SDL_Event *ev, VirtMachine *m)
 
 static void sdl_handle_mouse_button_event(const SDL_Event *ev, VirtMachine *m)
 {
-    BOOL is_absolute = vm_mouse_is_absolute(m);
+    bool is_absolute = vm_mouse_is_absolute(m);
     int state, dz;
 
     dz = 0;

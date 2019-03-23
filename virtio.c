@@ -102,7 +102,7 @@ typedef struct {
     virtio_phys_addr_t desc_addr;
     virtio_phys_addr_t avail_addr;
     virtio_phys_addr_t used_addr;
-    BOOL manual_recv; /* if TRUE, the device_recv() callback is not called */
+    bool manual_recv; /* if true, the device_recv() callback is not called */
 } QueueState;
 
 #define VRING_DESC_F_NEXT	1
@@ -123,7 +123,7 @@ typedef int VIRTIODeviceRecvFunc(VIRTIODevice *s1, int queue_idx,
                                  int write_size);
 
 /* return NULL if no RAM at this address. The mapping is valid for one page */
-typedef uint8_t *VIRTIOGetRAMPtrFunc(VIRTIODevice *s, virtio_phys_addr_t paddr, BOOL is_rw);
+typedef uint8_t *VIRTIOGetRAMPtrFunc(VIRTIODevice *s, virtio_phys_addr_t paddr, bool is_rw);
 
 struct VIRTIODevice {
     PhysMemoryMap *mem_map;
@@ -178,12 +178,12 @@ static void virtio_reset(VIRTIODevice *s)
     }
 }
 
-static uint8_t *virtio_pci_get_ram_ptr(VIRTIODevice *s, virtio_phys_addr_t paddr, BOOL is_rw)
+static uint8_t *virtio_pci_get_ram_ptr(VIRTIODevice *s, virtio_phys_addr_t paddr, bool is_rw)
 {
     return pci_device_get_dma_ptr(s->pci_dev, paddr, is_rw);
 }
 
-static uint8_t *virtio_mmio_get_ram_ptr(VIRTIODevice *s, virtio_phys_addr_t paddr, BOOL is_rw)
+static uint8_t *virtio_mmio_get_ram_ptr(VIRTIODevice *s, virtio_phys_addr_t paddr, bool is_rw)
 {
     return phys_mem_get_ram_ptr(s->mem_map, paddr, is_rw);
 }
@@ -211,7 +211,7 @@ static void virtio_add_pci_capability(VIRTIODevice *s, int cfg_type,
 }
 
 static void virtio_pci_bar_set(void *opaque, int bar_num,
-                               uint32_t addr, BOOL enabled)
+                               uint32_t addr, bool enabled)
 {
     VIRTIODevice *s = opaque;
     phys_mem_set_addr(s->mem_range, addr, enabled);
@@ -300,7 +300,7 @@ static uint16_t virtio_read16(VIRTIODevice *s, virtio_phys_addr_t addr)
     uint8_t *ptr;
     if (addr & 1)
         return 0; /* unaligned access are not supported */
-    ptr = s->get_ram_ptr(s, addr, FALSE);
+    ptr = s->get_ram_ptr(s, addr, false);
     if (!ptr)
         return 0;
     return *(uint16_t *)ptr;
@@ -312,7 +312,7 @@ static void virtio_write16(VIRTIODevice *s, virtio_phys_addr_t addr,
     uint8_t *ptr;
     if (addr & 1)
         return; /* unaligned access are not supported */
-    ptr = s->get_ram_ptr(s, addr, TRUE);
+    ptr = s->get_ram_ptr(s, addr, true);
     if (!ptr)
         return;
     *(uint16_t *)ptr = val;
@@ -324,7 +324,7 @@ static void virtio_write32(VIRTIODevice *s, virtio_phys_addr_t addr,
     uint8_t *ptr;
     if (addr & 3)
         return; /* unaligned access are not supported */
-    ptr = s->get_ram_ptr(s, addr, TRUE);
+    ptr = s->get_ram_ptr(s, addr, true);
     if (!ptr)
         return;
     *(uint32_t *)ptr = val;
@@ -338,7 +338,7 @@ static int virtio_memcpy_from_ram(VIRTIODevice *s, uint8_t *buf,
 
     while (count > 0) {
         l = min_int(count, VIRTIO_PAGE_SIZE - (addr & (VIRTIO_PAGE_SIZE - 1)));
-        ptr = s->get_ram_ptr(s, addr, FALSE);
+        ptr = s->get_ram_ptr(s, addr, false);
         if (!ptr)
             return -1;
         memcpy(buf, ptr, l);
@@ -357,7 +357,7 @@ static int virtio_memcpy_to_ram(VIRTIODevice *s, virtio_phys_addr_t addr,
 
     while (count > 0) {
         l = min_int(count, VIRTIO_PAGE_SIZE - (addr & (VIRTIO_PAGE_SIZE - 1)));
-        ptr = s->get_ram_ptr(s, addr, TRUE);
+        ptr = s->get_ram_ptr(s, addr, true);
         if (!ptr)
             return -1;
         memcpy(ptr, buf, l);
@@ -379,7 +379,7 @@ static int get_desc(VIRTIODevice *s, VIRTIODesc *desc,
 
 static int memcpy_to_from_queue(VIRTIODevice *s, uint8_t *buf,
                                 int queue_idx, int desc_idx,
-                                int offset, int count, BOOL to_queue)
+                                int offset, int count, bool to_queue)
 {
     VIRTIODesc desc;
     int l, f_write_flag;
@@ -446,7 +446,7 @@ static int memcpy_from_queue(VIRTIODevice *s, void *buf,
                              int offset, int count)
 {
     return memcpy_to_from_queue(s, buf, queue_idx, desc_idx, offset, count,
-                                FALSE);
+                                false);
 }
 
 static int memcpy_to_queue(VIRTIODevice *s,
@@ -454,7 +454,7 @@ static int memcpy_to_queue(VIRTIODevice *s,
                            int offset, const void *buf, int count)
 {
     return memcpy_to_from_queue(s, (void *)buf, queue_idx, desc_idx, offset,
-                                count, TRUE);
+                                count, true);
 }
 
 /* signal that the descriptor has been consumed */
@@ -992,7 +992,7 @@ typedef struct VIRTIOBlockDevice {
     VIRTIODevice common;
     BlockDevice *bs;
 
-    BOOL req_in_progress;
+    bool req_in_progress;
     BlockRequest req; /* request in progress */
 } VIRTIOBlockDevice;
 
@@ -1054,7 +1054,7 @@ static void virtio_block_req_cb(void *opaque, int ret)
 
     virtio_block_req_end(s, ret);
     
-    s1->req_in_progress = FALSE;
+    s1->req_in_progress = false;
 
     /* handle next requests */
     queue_notify((VIRTIODevice *)s, s1->req.queue_idx);
@@ -1088,7 +1088,7 @@ static int virtio_block_recv_request(VIRTIODevice *s, int queue_idx,
                              virtio_block_req_cb, s);
         if (ret > 0) {
             /* asyncronous read */
-            s1->req_in_progress = TRUE;
+            s1->req_in_progress = true;
         } else {
             virtio_block_req_end(s, ret);
         }
@@ -1103,7 +1103,7 @@ static int virtio_block_recv_request(VIRTIODevice *s, int queue_idx,
         free(buf);
         if (ret > 0) {
             /* asyncronous write */
-            s1->req_in_progress = TRUE;
+            s1->req_in_progress = true;
         } else {
             virtio_block_req_end(s, ret);
         }
@@ -1174,14 +1174,14 @@ static int virtio_net_recv_request(VIRTIODevice *s, int queue_idx,
     return 0;
 }
 
-static BOOL virtio_net_can_write_packet(EthernetDevice *es)
+static bool virtio_net_can_write_packet(EthernetDevice *es)
 {
     VIRTIODevice *s = es->device_opaque;
     QueueState *qs = &s->queue[0];
     uint16_t avail_idx;
 
     if (!qs->ready)
-        return FALSE;
+        return false;
     avail_idx = virtio_read16(s, qs->avail_addr + 2);
     return qs->last_avail_idx != avail_idx;
 }
@@ -1216,7 +1216,7 @@ static void virtio_net_write_packet(EthernetDevice *es, const uint8_t *buf, int 
     qs->last_avail_idx++;
 }
 
-static void virtio_net_set_carrier(EthernetDevice *es, BOOL carrier_state)
+static void virtio_net_set_carrier(EthernetDevice *es, bool carrier_state)
 {
 #if 0
     VIRTIODevice *s1 = es->device_opaque;
@@ -1241,7 +1241,7 @@ VIRTIODevice *virtio_net_init(VIRTIOBusDef *bus, EthernetDevice *es)
                 1, 6 + 2, virtio_net_recv_request);
     /* VIRTIO_NET_F_MAC, VIRTIO_NET_F_STATUS */
     s->common.device_features = (1 << 5) /* | (1 << 16) */;
-    s->common.queue[0].manual_recv = TRUE;
+    s->common.queue[0].manual_recv = true;
     s->es = es;
     memcpy(s->common.config_space, es->mac_addr, 6);
     /* status */
@@ -1284,13 +1284,13 @@ static int virtio_console_recv_request(VIRTIODevice *s, int queue_idx,
     return 0;
 }
 
-BOOL virtio_console_can_write_data(VIRTIODevice *s)
+bool virtio_console_can_write_data(VIRTIODevice *s)
 {
     QueueState *qs = &s->queue[0];
     uint16_t avail_idx;
 
     if (!qs->ready)
-        return FALSE;
+        return false;
     avail_idx = virtio_read16(s, qs->avail_addr + 2);
     return qs->last_avail_idx != avail_idx;
 }
@@ -1353,7 +1353,7 @@ VIRTIODevice *virtio_console_init(VIRTIOBusDef *bus, CharacterDevice *cs)
     virtio_init(&s->common, bus,
                 3, 4, virtio_console_recv_request);
     s->common.device_features = (1 << 0); /* VIRTIO_CONSOLE_F_SIZE */
-    s->common.queue[0].manual_recv = TRUE;
+    s->common.queue[0].manual_recv = true;
     
     s->cs = cs;
     return (VIRTIODevice *)s;
@@ -1446,7 +1446,7 @@ static int virtio_input_queue_event(VIRTIODevice *s,
     return 0;
 }
 
-int virtio_input_send_key_event(VIRTIODevice *s, BOOL is_down,
+int virtio_input_send_key_event(VIRTIODevice *s, bool is_down,
                                 uint16_t key_code)
 {
     VIRTIOInputDevice *s1 = (VIRTIOInputDevice *)s;
@@ -1636,7 +1636,7 @@ VIRTIODevice *virtio_input_init(VIRTIOBusDef *bus, VirtioInputTypeEnum type)
     s = mallocz(sizeof(*s));
     virtio_init(&s->common, bus,
                 18, 256, virtio_input_recv_request);
-    s->common.queue[0].manual_recv = TRUE;
+    s->common.queue[0].manual_recv = true;
     s->common.device_features = 0;
     s->common.config_write = virtio_input_config_write;
     s->type = type;
@@ -1657,7 +1657,7 @@ typedef struct VIRTIO9PDevice {
     FSDevice *fs;
     int msize; /* maximum message size */
     struct list_head fid_list; /* list of FIDDesc */
-    BOOL req_in_progress;
+    bool req_in_progress;
 } VIRTIO9PDevice;
 
 static FIDDesc *fid_find1(VIRTIO9PDevice *s, uint32_t fid)
@@ -2033,7 +2033,7 @@ static void virtio_9p_open_cb(FSDevice *fs, FSQID *qid, int err,
     
     virtio_9p_open_reply(fs, qid, err, oi);
 
-    s->req_in_progress = FALSE;
+    s->req_in_progress = false;
 
     /* handle next requests */
     queue_notify((VIRTIODevice *)s, queue_idx);
@@ -2123,7 +2123,7 @@ static int virtio_9p_recv_request(VIRTIODevice *s1, int queue_idx,
             if (err <= 0) {
                 virtio_9p_open_reply(fs, &qid, err, oi);
             } else {
-                s->req_in_progress = TRUE;
+                s->req_in_progress = true;
             }
         }
         break;

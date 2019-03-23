@@ -46,12 +46,12 @@ FSFile *fs_walk_path1(FSDevice *fs, FSFile *f, const char *path,
     FSFile *f1;
     FSQID qid;
     int len, ret;
-    BOOL is_last, is_first;
+    bool is_last, is_first;
 
     if (path[0] == '/')
         path++;
     
-    is_first = TRUE;
+    is_first = true;
     for(;;) {
         p = strchr(path, '/');
         if (!p) {
@@ -65,13 +65,13 @@ FSFile *fs_walk_path1(FSDevice *fs, FSFile *f, const char *path,
                 }
                 return f;
             }
-            is_last = TRUE;
+            is_last = true;
         } else {
             len = p - path;
             name = malloc(len + 1);
             memcpy(name, path, len);
             name[len] = '\0';
-            is_last = FALSE;
+            is_last = false;
         }
         ret = fs->fs_walk(fs, &f1, &qid, f, 1, &name);
         if (!is_last)
@@ -79,7 +79,7 @@ FSFile *fs_walk_path1(FSDevice *fs, FSFile *f, const char *path,
         if (!is_first)
             fs->fs_delete(fs, f);
         f = f1;
-        is_first = FALSE;
+        is_first = false;
         if (ret <= 0) {
             fs->fs_delete(fs, f);
             f = NULL;

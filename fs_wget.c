@@ -96,7 +96,7 @@ extern int emscripten_async_wget3_data(const char* url, const char* requesttype,
 
 XHRState *fs_wget2(const char *url, const char *user, const char *password,
                    WGetReadCallback *read_cb, uint64_t post_data_len,
-                   void *opaque, WGetWriteCallback *cb, BOOL single_write)
+                   void *opaque, WGetWriteCallback *cb, bool single_write)
 {
     XHRState *s;
     const char *request;
@@ -139,7 +139,7 @@ struct XHRState {
     WGetWriteCallback *write_cb;
     WGetReadCallback *read_cb;
 
-    BOOL single_write;
+    bool single_write;
     DynBuf dbuf; /* used if single_write */
 };
 
@@ -192,7 +192,7 @@ static size_t fs_wget_read_cb(char *ptr, size_t size, size_t nmemb,
 
 XHRState *fs_wget2(const char *url, const char *user, const char *password,
                    WGetReadCallback *read_cb, uint64_t post_data_len,
-                   void *opaque, WGetWriteCallback *write_cb, BOOL single_write)
+                   void *opaque, WGetWriteCallback *write_cb, bool single_write)
 {
     XHRState *s;
     s = mallocz(sizeof(*s));
@@ -319,7 +319,7 @@ void fs_net_event_loop(FSNetEventLoopCompletionFunc *cb, void *opaque)
 #endif /* !EMSCRIPTEN */
 
 XHRState *fs_wget(const char *url, const char *user, const char *password,
-                  void *opaque, WGetWriteCallback *cb, BOOL single_write)
+                  void *opaque, WGetWriteCallback *cb, bool single_write)
 {
     return fs_wget2(url, user, password, NULL, 0, opaque, cb, single_write);
 }
@@ -380,7 +380,7 @@ int decrypt_file(DecryptFileState *s, const uint8_t *data,
                 /* keep one block in case it is the padding */
                 len = s->dec_buf_pos - AES_BLOCK_SIZE;
                 AES_cbc_encrypt(s->dec_buf, s->dec_buf, len,
-                                s->aes_state, s->iv, FALSE);
+                                s->aes_state, s->iv, false);
                 ret = s->write_cb(s->opaque, s->dec_buf, len);
                 if (ret < 0)
                     return ret;
@@ -410,7 +410,7 @@ int decrypt_file_flush(DecryptFileState *s)
         (len % AES_BLOCK_SIZE) != 0)
         return -1;
     AES_cbc_encrypt(s->dec_buf, s->dec_buf, len,
-                    s->aes_state, s->iv, FALSE);
+                    s->aes_state, s->iv, false);
     pad_len = s->dec_buf[s->dec_buf_pos - 1];
     if (pad_len < 1 || pad_len > AES_BLOCK_SIZE)
         return -1;
@@ -526,7 +526,7 @@ void fs_wget_file2(FSDevice *fs, FSFile *f, const char *url,
     }
     
     fs_wget2(url, user, password, fs_wget_file_read_cb, post_data_len,
-             s, fs_wget_file_on_load, FALSE);
+             s, fs_wget_file_on_load, false);
 }
 
 /***********************************************/

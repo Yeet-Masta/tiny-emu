@@ -315,7 +315,7 @@ static void skip_spaces(const char **pp)
     *pp = p;
 }
 
-static inline BOOL is_ident_first(int c)
+static inline bool is_ident_first(int c)
 {
     return (c >= 'a' && c <= 'z') ||
         (c >= 'A' && c <= 'Z') ||
@@ -423,9 +423,9 @@ JSONValue json_parse_value2(const char **pp)
         if (!strcmp(buf, "null")) {
             val = json_null_new();
         } else if (!strcmp(buf, "true")) {
-            val = json_bool_new(TRUE);
+            val = json_bool_new(true);
         } else if (!strcmp(buf, "false")) {
-            val = json_bool_new(FALSE);
+            val = json_bool_new(false);
         } else {
         unknown_id:
             return json_error_new("unknown identifier: '%s'", buf);
