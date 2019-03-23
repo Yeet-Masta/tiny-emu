@@ -1,7 +1,5 @@
 # TinyEMU
 
-[![Build Status](https://travis-ci.com/fernandotcl/TinyEMU.svg?branch=master)](https://travis-ci.com/fernandotcl/TinyEMU)
-
 This is a port of [TinyEMU][tinyemu] to macOS.
 
 [tinyemu]: https://bellard.org/tinyemu/
@@ -42,11 +40,6 @@ You can also use TinyEMU with local configuration and disks. You can find more i
 
 ## Installing
 
-The easiest way to install TinyEMU is through [Homebrew][]. There is a formula for TinyEMU in [my Homebrew tap][tap].
-
-[homebrew]: https://brew.sh
-[tap]: https://github.com/fernandotcl/homebrew-fernandotcl
-
 If you're compiling from source, you'll need:
 
 - [OpenSSL][] (optional)
@@ -59,10 +52,9 @@ Make sure to disable `CONFIG_INT128` for 32-bit hosts.
 
 ## Credits
 
-TinyEMU was created by [Fabrice Bellard][fabrice]. This port is maintained by [Fernando Tarlá Cardoso Lemos][fernando].
+TinyEMU was created by [Fabrice Bellard][fabrice].
 
 [fabrice]: https://bellard.org
-[fernando]: mailto:fernandotcl@gmail.com
 
 ## License
 
