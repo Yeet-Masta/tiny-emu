@@ -1,6 +1,7 @@
-# TinyEMU
+# RISCV-EMU
 
-This is a port of [TinyEMU][tinyemu] to macOS.
+This is a community build of [TinyEMU][tinyemu], targeting in GNU/Linux, macOS,
+and MS-Windows support.
 
 [tinyemu]: https://bellard.org/tinyemu/
 
@@ -16,8 +17,8 @@ This is a port of [TinyEMU][tinyemu] to macOS.
 
 Use the VM images available from Fabrice Bellard's [jslinux][] (no need to download them):
 
-```
-$ temu https://bellard.org/jslinux/buildroot-riscv64.cfg
+```shell
+$ ./temu https://bellard.org/jslinux/buildroot-riscv64.cfg
 
 Welcome to JS/Linux (riscv64)
 
