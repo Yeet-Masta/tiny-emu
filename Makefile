@@ -30,8 +30,6 @@ CONFIG_SDL=y
 # if set, compile the 128 bit emulator. Note: the 128 bit target does
 # not compile if gcc does not support the int128 type (32 bit hosts).
 CONFIG_INT128=y
-# build x86 emulator
-CONFIG_X86EMU=y
 # macOS build
 #CONFIG_MACOS=y
 # win32 build (not usable yet)
@@ -101,10 +99,6 @@ override CFLAGS+=-DCONFIG_RISCV_MAX_XLEN=128
 EMU_OBJS+=riscv_cpu128.o
 else
 override CFLAGS+=-DCONFIG_RISCV_MAX_XLEN=64
-endif
-ifdef CONFIG_X86EMU
-override CFLAGS+=-DCONFIG_X86EMU
-EMU_OBJS+=x86_cpu.o x86_machine.o ide.o ps2.o vmmouse.o pckbd.o vga.o
 endif
 
 temu$(EXE): $(EMU_OBJS)
