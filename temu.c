@@ -799,7 +799,8 @@ int main(int argc, char **argv)
 #ifdef CONFIG_SDL
     if (p->display_device) {
         sdl_init(p->width, p->height);
-    }
+        p->console = console_init(true);
+    } else
 #endif
     {
 #ifdef _WIN32
