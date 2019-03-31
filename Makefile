@@ -36,6 +36,9 @@ CONFIG_INT128=y
 #CONFIG_WIN32=y
 # user space network redirector
 CONFIG_SLIRP=y
+# if set, you can pass a compressed cpio archive as initramfs. zlib
+# must be installed.
+CONFIG_COMPRESSED_INITRAMFS=y
 
 ifdef CONFIG_WIN32
 CROSS_PREFIX=i686-w64-mingw32-
@@ -99,6 +102,12 @@ override CFLAGS+=-DCONFIG_RISCV_MAX_XLEN=128
 EMU_OBJS+=riscv_cpu128.o
 else
 override CFLAGS+=-DCONFIG_RISCV_MAX_XLEN=64
+endif
+
+ifdef CONFIG_COMPRESSED_INITRAMFS
+EMU_OBJS+=compress.o
+override CFLAGS+=-DCONFIG_COMPRESSED_INITRAMFS
+override LDFLAGS+=-lz
 endif
 
 temu$(EXE): $(EMU_OBJS)
