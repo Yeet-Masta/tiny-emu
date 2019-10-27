@@ -111,7 +111,7 @@ override LDFLAGS+=-lz
 endif
 
 temu$(EXE): $(EMU_OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^ $(EMU_LIBS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(EMU_LIBS)
 
 riscv_cpu32.o: riscv_cpu.c
 	$(CC) $(CFLAGS) -DMAX_XLEN=32 -c -o $@ $<
@@ -123,10 +123,10 @@ riscv_cpu128.o: riscv_cpu.c
 	$(CC) $(CFLAGS) -DMAX_XLEN=128 -c -o $@ $<
 
 build_filelist: build_filelist.o fs_utils.o cutils.o
-	$(CC) $(LDFLAGS) -o $@ $^ -lm
+	$(CC) -o $@ $^ $(LDFLAGS) -lm
 
 splitimg: splitimg.o
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 install: $(PROGS)
 	$(STRIP) $(PROGS)
