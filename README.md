@@ -7,9 +7,11 @@ and MS-Windows support.
 
 ## Features
 
-- 32/64/128 bit RISC-V emulation.
+- 32/64/128-bit RISC-V emulation.
 - VirtIO console, network, block device, input and 9P filesystem.
 - Framebuffer emulation through SDL.
+- Support for loading ELF images.
+- Support for loading initrd images or compressed initramfs archives.
 - Remote HTTP block device and filesystem.
 - Small code, easy to modify, no external dependencies.
 
