@@ -3,6 +3,7 @@
 - added complete JSLinux demo
 - RISC-V: added initrd support
 - RISC-V: fixed FMIN/FMAX instructions
+- github actions
 
 2018-09-23:
 
